@@ -16,17 +16,15 @@ class Batch(object):
         self.data_names = data_names
 
 class MyDataIter(mx.io.DataIter):
-    def __init__(self, z, x, k, m):
+    def __init__(self, z, x, batch_size, k):
         super(MyDataIter, self).__init__()
         print"初始化"
         self.data = z
-        self.batch_size = 1
+        self.batch_size = batch_size
         self.x = x
         self.k = k
-        self.m = [('M', m)]
         # self.provide_data = [('dataxi', (1,)), ('dataxj', (1,)), ('isinM', (1, 1)), ('M', (k, k))]
-        print m.shape
-        self.provide_data = [('dataxi', (1,)), m]
+        self.provide_data = [('dataxi', (batch_size,)), ('M', (batch_size, 10, 10))]
         # 输出数据的shape
         self.provide_label = []
 
@@ -36,12 +34,16 @@ class MyDataIter(mx.io.DataIter):
             dataxi = []
             dataxj = []
             isinM = []
+            mList = []
+            print self.k
+            m = np.ones(self.k, self.k)
             for i in range(self.batch_size):
                 j = k * self.batch_size + i
                 tempxi = int(j / len(self.data))
                 tempxj = j - tempxi * len(self.data)
                 dataxi.append(self.data[tempxi])
                 dataxj.append(self.data[tempxj])
+                mList.append(m)
 
                 if self.x[tempxi].all() == self.x[tempxj].all():
                     isinM.append(1)
@@ -99,6 +101,6 @@ def load_data_main():
 
     return x, val_x, train_iter, val_iter, train_label, val_label
 
-def get_data(train_z, val_z, x, k, m):
-    return MyDataIter(train_z, x, k, m), MyDataIter(val_z, x, k, m)
+def get_data(train_z, val_z, x, batch_size, k):
+    return MyDataIter(train_z, x, batch_size, k), MyDataIter(val_z, x, batch_size, k)
 

@@ -3,8 +3,6 @@
 import numpy as np
 import mxnet as mx
 
-
-
 def model_main(k, a):
     fc1_weight = mx.sym.Variable('fc1_weight')
     fc1_bias = mx.sym.Variable('fc1_bias')
@@ -26,6 +24,7 @@ def model_main(k, a):
     #m = mx.sym.Variable(name='M')  # M k*k
     # m = mx.nd.array([1,2,3,4])
     m = mx.sym.Variable(name='M', shape=(10, 10))  # M k*k
+
     xipart_net = mx.symbol.dot(lhs=xipart_net, rhs=m)  # dimension 1*k
     # xjpart_net = mx.sym.transpose(data=xjpart_net, name='fc4')  # xj dimension k*1
 

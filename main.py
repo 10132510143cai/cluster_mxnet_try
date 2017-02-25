@@ -18,8 +18,9 @@ print 'M的维数k为',
 print M.shape[0]
 
 M_shape = M.shape[0]
+batch_size = 10
 
-train, test = load_data.get_data(x, val_x, x, M_shape, M)
+train, test = load_data.get_data(x, val_x, x, batch_size, M_shape)
 
 print "训练集+验证集生成完成"
 
