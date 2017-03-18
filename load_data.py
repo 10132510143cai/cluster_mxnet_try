@@ -10,52 +10,78 @@ import matplotlib.pyplot as plt
 import mxnet as mx
 import pandas as pd
 
+class Auc(mx.metric.EvalMetric):
+    def __init__(self):
+        super(Auc, self).__init__('auc')
+
+    def update(self, labels, preds):
+        pred = preds[0].asnumpy().reshape(-1)
+        self.sum_metric += np.sum(pred)
+        self.num_inst += len(pred)
+
 class Batch(object):
-    def __init__(self, data_names, data):
+    def __init__(self, data_names, data, label_names, label):
         self.data = data
+        self.label = label
         self.data_names = data_names
+        self.label_names = label_names
+
+    @property
+    def provide_data(self):
+        return [(n, x.shape) for n, x in zip(self.data_names, self.data)]
+
+    @property
+    def provide_label(self):
+        return [(n, x.shape) for n, x in zip(self.label_names, self.label)]
+
 
 class MyDataIter(mx.io.DataIter):
-    def __init__(self, z, x, batch_size, k):
+    def __init__(self, z, label, batch_size, k):
         super(MyDataIter, self).__init__()
         print"初始化"
         self.data = z
+        self.label = label
         self.batch_size = batch_size
-        self.x = x
         self.k = k
         # self.provide_data = [('dataxi', (1,)), ('dataxj', (1,)), ('isinM', (1, 1)), ('M', (k, k))]
-        self.provide_data = [('dataxi', (batch_size,)), ('M', (batch_size, 10, 10))]
+        self.provide_data = [('dataxi', (batch_size,  784))]
         # 输出数据的shape
         self.provide_label = []
 
     def __iter__(self):
         print"进入迭代步骤"
-        for k in range(len(self.data) * len(self.data)):
+        print self.data
+        for k in range(self.data.shape[0] * self.data.shape[0] / self.batch_size):
             dataxi = []
             dataxj = []
             isinM = []
-            mList = []
-            print self.k
-            m = np.ones(self.k, self.k)
+
+            # m = np.ones(self.k, self.k)
             for i in range(self.batch_size):
                 j = k * self.batch_size + i
-                tempxi = int(j / len(self.data))
-                tempxj = j - tempxi * len(self.data)
-                dataxi.append(self.data[tempxi])
-                dataxj.append(self.data[tempxj])
-                mList.append(m)
+                tempxi = int(j / self.data.shape[0])
+                tempxj = int(j - tempxi * self.data.shape[0])
 
-                if self.x[tempxi].all() == self.x[tempxj].all():
+                dataxi.append(self.data[tempxi].asnumpy())
+                dataxj.append(self.data[tempxj].asnumpy())
+
+                if tempxi == tempxj:
                     isinM.append(1)
                 else:
                     isinM.append(0)
 
-            data_all = [mx.nd.array(dataxi), mx.nd.array(dataxj), mx.nd.array(isinM)]
-            data_names = ['dataxi', 'dataxj', 'isinM']
-            # label_all = [mx.nd.array(labels)]
-            # label_names = ['label']
+            # data_all = [mx.nd.array(dataxi), mx.nd.array(dataxj), mx.nd.array(isinM)]
+            # data_names = ['dataxi', 'dataxj', 'isinM']
+            data_all = [mx.nd.array(dataxi)]
+            data_names = ['dataxi']
 
-            data_batch = Batch(data_names, data_all)
+            print "epoch",
+            print k
+
+            label_all = []
+            label_names = []
+
+            data_batch = Batch(data_names, data_all, label_names, label_all)
             yield data_batch
 
     def reset(self):
@@ -101,6 +127,6 @@ def load_data_main():
 
     return x, val_x, train_iter, val_iter, train_label, val_label
 
-def get_data(train_z, val_z, x, batch_size, k):
-    return MyDataIter(train_z, x, batch_size, k), MyDataIter(val_z, x, batch_size, k)
+def get_data(train_z, val_z, train_label, val_label, batch_size, k):
+    return MyDataIter(train_z, train_label, batch_size, k), MyDataIter(val_z, val_label, batch_size, k)
 

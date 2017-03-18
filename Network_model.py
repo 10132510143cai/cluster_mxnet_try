@@ -13,7 +13,7 @@ def model_main(k, a):
     xipart_net = mx.sym.Variable(name='dataxi')
     xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc1_weight, bias=fc1_bias, num_hidden=64, name="fc1")
     xipart_net = mx.sym.Activation(xipart_net, name='relu1', act_type="relu")
-    xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension 1*k
+    xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension batch_size*k
 
     xjpart_net = mx.sym.Variable(name='dataxj')
 
@@ -26,8 +26,8 @@ def model_main(k, a):
     m = mx.sym.Variable(name='M', shape=(10, 10))  # M k*k
 
     xipart_net = mx.symbol.dot(lhs=xipart_net, rhs=m)  # dimension 1*k
-    # xjpart_net = mx.sym.transpose(data=xjpart_net, name='fc4')  # xj dimension k*1
-
+    # # xjpart_net = mx.sym.transpose(data=xjpart_net, name='fc4')  # xj dimension k*1
+    #
     # net = xipart_net * xjpart_net
     # net = mx.sym.sum(data=net)  # dimension 1*1
     #
