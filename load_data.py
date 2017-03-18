@@ -44,7 +44,7 @@ class MyDataIter(mx.io.DataIter):
         self.batch_size = batch_size
         self.k = k
         # self.provide_data = [('dataxi', (1,)), ('dataxj', (1,)), ('isinM', (1, 1)), ('M', (k, k))]
-        self.provide_data = [('dataxi', (batch_size,  784))]
+        self.provide_data = [('dataxi', (batch_size,  784)), ('dataxj', (batch_size,  784)), ('isinM', (batch_size, ))]
         # 输出数据的shape
         self.provide_label = []
 
@@ -72,8 +72,8 @@ class MyDataIter(mx.io.DataIter):
 
             # data_all = [mx.nd.array(dataxi), mx.nd.array(dataxj), mx.nd.array(isinM)]
             # data_names = ['dataxi', 'dataxj', 'isinM']
-            data_all = [mx.nd.array(dataxi)]
-            data_names = ['dataxi']
+            data_all = [mx.nd.array(dataxi), mx.nd.array(dataxj), mx.nd.array(isinM)]
+            data_names = ['dataxi', 'dataxj', 'isinM']
 
             print "epoch",
             print k

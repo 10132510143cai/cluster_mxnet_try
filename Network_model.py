@@ -21,23 +21,28 @@ def model_main(k, a):
     xjpart_net = mx.sym.Activation(data=xjpart_net, name='relu1', act_type="relu")
     xjpart_net = mx.sym.FullyConnected(data=xjpart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension 1*k
 
-    #m = mx.sym.Variable(name='M')  # M k*k
-    # m = mx.nd.array([1,2,3,4])
     m = mx.sym.Variable(name='M', shape=(10, 10))  # M k*k
 
-    xipart_net = mx.symbol.dot(lhs=xipart_net, rhs=m)  # dimension 1*k
-    # # xjpart_net = mx.sym.transpose(data=xjpart_net, name='fc4')  # xj dimension k*1
-    #
-    # net = xipart_net * xjpart_net
-    # net = mx.sym.sum(data=net)  # dimension 1*1
-    #
-    # isinm = mx.sym.Variable('isinM')  #dimenstion batchsize*1
-    #
-    # # 设置loss_layer
-    # loss_function = isinm * a * (net - 1) + (1-isinm) * (1 - a) * net
+    xipart_net = mx.symbol.dot(lhs=xipart_net, rhs=m)  # dimension batchsize * k
+    #  xjpart_net = mx.sym.transpose(data=xjpart_net, name='fc4')  # xj dimension k * batchsize
+    net = xipart_net * xjpart_net  # dimension batchsize * k
+    net = mx.symbol.sum(data=net, axis=1)  # dimension batchsize * 1
+    net = net
+
+    isinm = mx.sym.Variable('isinM')  #dimenstion batchsize * 1
+
+    isinmpart = net * isinm - isinm
+    isinmpart = isinmpart * isinmpart  # 相当于单个值得二范数
+    isinmpart = mx.symbol.sum_axis(isinmpart)  # dimension 1*1
+
+    isnotinmpart = net * (1-isinm)
+    isnotinmpart = isnotinmpart * isnotinmpart  # 相当于单个值得二范数
+    isnotinmpart = mx.symbol.sum_axis(isnotinmpart)  # dimension 1*1
+
+    loss_function = isinmpart + isnotinmpart
     # ls = mx.sym.MakeLoss(loss_function)
 
-    ls = mx.sym.MakeLoss(xipart_net)
+    ls = mx.sym.MakeLoss(loss_function)
     print "模型构建完成"
     return ls
 
