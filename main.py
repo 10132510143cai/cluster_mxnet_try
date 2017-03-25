@@ -52,7 +52,7 @@ model.fit(
     X=train,  # training data
     eval_metric=metric,
     # eval_data=test,  # validation data
-    # batch_end_callback=mx.callback.Speedometer(batch_size, 200)  # output progress for each 200 data batches
+    batch_end_callback=mx.callback.Speedometer(batch_size, 2)  # output progress for each 200 data batches
 )
 
 model.save(sys.argv[2])

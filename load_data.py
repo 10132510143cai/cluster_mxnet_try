@@ -16,7 +16,9 @@ class Auc(mx.metric.EvalMetric):
 
     def update(self, labels, preds):
         pred = preds[0].asnumpy().reshape(-1)
-        self.sum_metric += np.sum(pred)
+        self.sum_metric = np.sum(pred)
+        # print "loss: ",
+        # print self.sum_metric
         self.num_inst += len(pred)
 
 class Batch(object):
@@ -38,7 +40,6 @@ class Batch(object):
 class MyDataIter(mx.io.DataIter):
     def __init__(self, z, label, batch_size, k):
         super(MyDataIter, self).__init__()
-        print"初始化"
         self.data = z
         self.label = label
         self.batch_size = batch_size
@@ -75,8 +76,8 @@ class MyDataIter(mx.io.DataIter):
             data_all = [mx.nd.array(dataxi), mx.nd.array(dataxj), mx.nd.array(isinM)]
             data_names = ['dataxi', 'dataxj', 'isinM']
 
-            print "epoch",
-            print k
+            # print "epoch",
+            # print k
 
             label_all = []
             label_names = []
