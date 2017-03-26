@@ -19,7 +19,7 @@ class Auc(mx.metric.EvalMetric):
         self.sum_metric = np.sum(pred)
         # print "loss: ",
         # print self.sum_metric
-        self.num_inst += len(pred)
+        self.num_inst = len(pred)
 
 class Batch(object):
     def __init__(self, data_names, data, label_names, label):
@@ -50,8 +50,6 @@ class MyDataIter(mx.io.DataIter):
         self.provide_label = []
 
     def __iter__(self):
-        print"进入迭代步骤"
-        print self.data
         for k in range(self.data.shape[0] * self.data.shape[0] / self.batch_size):
             dataxi = []
             dataxj = []
@@ -109,7 +107,7 @@ def to4d(img):
 
 # 加载数据集
 def load_data_main():
-    path = 'C:/Users/Mr_C/Desktop/MNIST/'
+    path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
     (train_lbl, train_img) = read_data(
         path + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
     (val_lbl, val_img) = read_data(
