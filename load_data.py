@@ -13,7 +13,7 @@ import pandas as pd
 
 class Auc(mx.metric.EvalMetric):
     def __init__(self):
-        super(Auc, self).__init__('auc')
+        super(Auc, self).__init__('loss')
 
     def update(self, labels, preds):
         pred = preds[0].asnumpy().reshape(-1)
@@ -39,12 +39,13 @@ class Batch(object):
 
 
 class MyDataIter(mx.io.DataIter):
-    def __init__(self, z, label, batch_size, k):
+    def __init__(self, z, label, batch_size, k, self_made_m):
         super(MyDataIter, self).__init__()
         self.data = z
         self.label = label
         self.batch_size = batch_size
         self.k = k
+        self.self_made_m = self_made_m
         # self.provide_data = [('dataxi', (1,)), ('dataxj', (1,)), ('isinM', (1, 1)), ('M', (k, k))]
         self.provide_data = [('dataxi', (batch_size,  784)), ('dataxj', (batch_size,  784)), ('isinM', (batch_size, ))]
         # 输出数据的shape
@@ -65,7 +66,8 @@ class MyDataIter(mx.io.DataIter):
                 dataxi.append(self.data[tempxi].asnumpy())
                 dataxj.append(self.data[tempxj].asnumpy())
 
-                if tempxi == tempxj:
+
+                if self.self_made_m[tempxi][tempxj] == 1:
                     isinM.append(1)
                 else:
                     isinM.append(0)
@@ -86,14 +88,6 @@ class MyDataIter(mx.io.DataIter):
 
     def reset(self):
         pass
-
-
-def random_number():
-    a = random.random()
-    if a < 0.4:
-        return 1
-    else:
-        return 0
 
 
 def download_data(url, force_download=True):
@@ -135,6 +129,6 @@ def load_data_main():
 
     return x, val_x, train_iter, val_iter, train_label, val_label
 
-def get_data(train_z, val_z, train_label, val_label, batch_size, k):
-    return MyDataIter(train_z, train_label, batch_size, k), MyDataIter(val_z, val_label, batch_size, k)
+def get_data(train_z, val_z, train_label, val_label, batch_size, k, self_made_m):
+    return MyDataIter(train_z, train_label, batch_size, k, self_made_m), MyDataIter(val_z, val_label, batch_size, k, self_made_m)
 

@@ -3,6 +3,7 @@
 import Network_model as mlp_model
 import mxnet as mx
 import load_data
+import initM
 import pandas as pd
 import sys
 
@@ -25,7 +26,9 @@ print M.shape[0]
 M_shape = M.shape[0]
 batch_size = 200
 
-train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, M_shape)
+# 这里和数据集大小保持一致
+self_made_m = initM.init_m(600)
+train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, M_shape, self_made_m)
 
 print "训练集+验证集生成完成"
 
