@@ -8,6 +8,7 @@ import gzip
 import struct
 import matplotlib.pyplot as plt
 import mxnet as mx
+import random
 import pandas as pd
 
 class Auc(mx.metric.EvalMetric):
@@ -85,6 +86,14 @@ class MyDataIter(mx.io.DataIter):
 
     def reset(self):
         pass
+
+
+def random_number():
+    a = random.random()
+    if a < 0.4:
+        return 1
+    else:
+        return 0
 
 
 def download_data(url, force_download=True):
