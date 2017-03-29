@@ -15,15 +15,24 @@ def random_number():
 init_m函数是生成包含众多二元组的M，M中存在的二元组（i,j）代表i,j有联系
 n  数据的维数
 '''
-def init_m(n):
-    arrayM = np.zeros((n, n))
-    for i in range(0, n):
-        for j in range(0, i+1):
-            if i == j:
-                arrayM[i][j] = 1
-            elif random_number() == 1:
-                arrayM[i][j] = 1
-                arrayM[j][i] = 1
+def init_m(train_label):
+    hashmap = {}
+    for i in range(0, train_label.shape[0]):
+        if train_label[i] not in hashmap:
+            hashmap[train_label[i]] = [i]
+        else:
+            keylist = hashmap.get(train_label[i])
+            keylist.append(i)
+            hashmap[train_label[i]] = keylist
+
+    arrayM = np.zeros((train_label.shape[0], train_label.shape[0]))
+
+    for key in hashmap:
+        keylist = hashmap.get(key)
+        for i in range(0, len(keylist)):
+            for j in range(i, len(keylist)):
+                arrayM[keylist[i]][keylist[j]] = 1
+                arrayM[keylist[j]][keylist[i]] = 1
 
     print arrayM
     return arrayM

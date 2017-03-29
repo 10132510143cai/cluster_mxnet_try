@@ -63,8 +63,8 @@ class MyDataIter(mx.io.DataIter):
                 tempxi = int(j / self.data.shape[0])
                 tempxj = int(j - tempxi * self.data.shape[0])
 
-                dataxi.append(self.data[tempxi].asnumpy())
-                dataxj.append(self.data[tempxj].asnumpy())
+                dataxi.append(self.data[tempxi])
+                dataxj.append(self.data[tempxj])
 
 
                 if self.self_made_m[tempxi][tempxj] == 1:
@@ -110,7 +110,8 @@ def to4d(img):
 
 # 加载数据集
 def load_data_main():
-    path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
+    # path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
+    path = 'C:\Users\Mr_C\Desktop\MNIST/'
     (train_lbl, train_img) = read_data(
         path + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
     (val_lbl, val_img) = read_data(

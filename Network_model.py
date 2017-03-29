@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
 import mxnet as mx
 
 def model_main(k, a):
@@ -12,6 +11,7 @@ def model_main(k, a):
 
     xipart_net = mx.sym.Variable(name='dataxi')
     xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc1_weight, bias=fc1_bias, num_hidden=64, name="fc1")
+    # xipart_net = mx.sym.Dropout(data=xipart_net, p=0.2)
     xipart_net = mx.sym.Activation(xipart_net, name='relu1', act_type="relu")
     xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension batch_size*k
 
@@ -19,6 +19,7 @@ def model_main(k, a):
 
     xjpart_net = mx.sym.FullyConnected(data=xjpart_net, weight=fc1_weight, bias=fc1_bias, num_hidden=64, name="fc1")
     xjpart_net = mx.sym.Activation(data=xjpart_net, name='relu1', act_type="relu")
+    # xjpart_net = mx.sym.Dropout(data=xjpart_net, p=0.2)
     xjpart_net = mx.sym.FullyConnected(data=xjpart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension 1*k
 
     m = mx.sym.Variable(name='M', shape=(10, 10))  # M k*k

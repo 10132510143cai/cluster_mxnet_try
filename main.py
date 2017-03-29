@@ -6,19 +6,34 @@ import load_data
 import initM
 import pandas as pd
 import sys
+import random
+import numpy as np
 
 sys.path.insert(0, "../../python")
 
 # 加载训练集以及数据集X
 x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_main()
 
+# 进行数据的shuffle
+train_label = train_label.reshape(train_label.shape[0], 1)
+numpyx = x.asnumpy()
+training_data = np.concatenate((numpyx, train_label), axis=1)
+random.shuffle(training_data)
+
+x = training_data[:, :-1]
+train_label = training_data[:, -1]
+print train_label[0:10]
+# 数据整合shuffle完毕
+
 x = x[:600]
 val_x = val_x[:600]
 train_label = train_label[:600]
 val_label = val_label[:600]
+
 print "训练集和验证集数据收集完毕，开始生成训练集以及验证集"
 
 M = mx.ndarray.ones(shape=(10, 10))  # dimension 10*10
+M = np.random.randint(0, 1, size=(10, 10))
 
 print 'M的维数k为',
 print M.shape[0]
@@ -27,7 +42,7 @@ M_shape = M.shape[0]
 batch_size = 200
 
 # 这里和数据集大小保持一致
-self_made_m = initM.init_m(600)
+self_made_m = initM.init_m(train_label)
 train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, M_shape, self_made_m)
 
 print "训练集+验证集生成完成"
