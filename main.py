@@ -4,12 +4,11 @@ import Network_model as mlp_model
 import mxnet as mx
 import load_data
 import initM
-import pandas as pd
-import sys
 import random
 import numpy as np
+import logging
 
-sys.path.insert(0, "../../python")
+logging.getLogger().setLevel(logging.DEBUG)
 
 # 加载训练集以及数据集X
 x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_main()
@@ -32,16 +31,13 @@ val_label = val_label[:600]
 
 print "训练集和验证集数据收集完毕，开始生成训练集以及验证集"
 
+# 初始化变量M
 M = mx.ndarray.ones(shape=(10, 10))  # dimension 10*10
 M = np.random.randint(0, 1, size=(10, 10))
 
-print 'M的维数k为',
-print M.shape[0]
-
 M_shape = M.shape[0]
-batch_size = 200
+batch_size = 6
 
-# 这里和数据集大小保持一致
 self_made_m = initM.init_m(train_label)
 train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, M_shape, self_made_m)
 
@@ -49,14 +45,15 @@ print "训练集+验证集生成完成"
 
 # 加载训练网络
 k = 10
-a = 0.5
+a = 0.7
 net = mlp_model.model_main(k, a)
 
 # 训练模型
 model = mx.model.FeedForward(
-    symbol=net,       # network structure
-    num_epoch=10,     # number of data passes for training
-    learning_rate=0.1,  # learning rate of SGD
+    symbol=net,  # network structure
+    num_epoch=100,  # number of data passes for training
+    learning_rate=0.01,  # learning rate of SGD
+    initializer=mx.init.Xavier(factor_type="in", magnitude=2.34),
     arg_params={'M': M}
 )
 
@@ -73,7 +70,6 @@ model.fit(
     batch_end_callback=mx.callback.Speedometer(batch_size, 200)  # output progress for each 200 data batches
 )
 
-model.save(sys.argv[2])
-
-
-
+prefix = 'mymodel'
+iteration = 100
+model.save(prefix, iteration)

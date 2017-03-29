@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+logging.getLogger().setLevel(logging.DEBUG)
 
 import mxnet as mx
 
@@ -11,7 +13,7 @@ def model_main(k, a):
 
     xipart_net = mx.sym.Variable(name='dataxi')
     xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc1_weight, bias=fc1_bias, num_hidden=64, name="fc1")
-    # xipart_net = mx.sym.Dropout(data=xipart_net, p=0.2)
+    xipart_net = mx.sym.Dropout(data=xipart_net, p=0.2)
     xipart_net = mx.sym.Activation(xipart_net, name='relu1', act_type="relu")
     xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension batch_size*k
 
@@ -19,7 +21,7 @@ def model_main(k, a):
 
     xjpart_net = mx.sym.FullyConnected(data=xjpart_net, weight=fc1_weight, bias=fc1_bias, num_hidden=64, name="fc1")
     xjpart_net = mx.sym.Activation(data=xjpart_net, name='relu1', act_type="relu")
-    # xjpart_net = mx.sym.Dropout(data=xjpart_net, p=0.2)
+    xjpart_net = mx.sym.Dropout(data=xjpart_net, p=0.2)
     xjpart_net = mx.sym.FullyConnected(data=xjpart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension 1*k
 
     m = mx.sym.Variable(name='M', shape=(10, 10))  # M k*k
@@ -28,15 +30,14 @@ def model_main(k, a):
     #  xjpart_net = mx.sym.transpose(data=xjpart_net, name='fc4')  # xj dimension k * batchsize
     net = xipart_net * xjpart_net  # dimension batchsize * k
     net = mx.symbol.sum(data=net, axis=1)  # dimension batchsize * 1
-    net = net
 
     isinm = mx.sym.Variable('isinM')  #dimenstion batchsize * 1
 
-    isinmpart = net * isinm - isinm
+    isinmpart = a * (net * isinm - isinm)
     isinmpart = isinmpart * isinmpart  # 相当于单个值得二范数
     isinmpart = mx.symbol.sum_axis(isinmpart)  # dimension 1*1
 
-    isnotinmpart = net * (1-isinm)
+    isnotinmpart = net * (1 - a) * (1 - isinm)
     isnotinmpart = isnotinmpart * isnotinmpart  # 相当于单个值得二范数
     isnotinmpart = mx.symbol.sum_axis(isnotinmpart)  # dimension 1*1
 

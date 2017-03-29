@@ -17,10 +17,11 @@ class Auc(mx.metric.EvalMetric):
 
     def update(self, labels, preds):
         pred = preds[0].asnumpy().reshape(-1)
-        self.sum_metric = np.sum(pred)
+        # print pred
+        self.sum_metric += np.sum(pred)
         # print "loss: ",
         # print self.sum_metric
-        self.num_inst = len(pred)
+        self.num_inst += len(pred)
 
 class Batch(object):
     def __init__(self, data_names, data, label_names, label):
