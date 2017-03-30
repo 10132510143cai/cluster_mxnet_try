@@ -70,6 +70,6 @@ model.fit(
     batch_end_callback=mx.callback.Speedometer(batch_size, 200)  # output progress for each 200 data batches
 )
 
-prefix = 'mymodel'
-iteration = 100
-model.save(prefix, iteration)
+# prefix = 'mymodel'
+# iteration = 100
+# model.save(prefix, iteration)
