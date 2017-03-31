@@ -39,7 +39,7 @@ M_shape = M.shape[0]
 batch_size = 6
 
 self_made_m = initM.init_m(train_label)
-train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, M_shape, self_made_m)
+train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, self_made_m)
 
 print "训练集+验证集生成完成"
 
@@ -51,7 +51,7 @@ net = mlp_model.model_main(k, a)
 # 训练模型
 model = mx.model.FeedForward(
     symbol=net,  # network structure
-    num_epoch=100,  # number of data passes for training
+    num_epoch=50,  # number of data passes for training
     learning_rate=0.01,  # learning rate of SGD
     initializer=mx.init.Xavier(factor_type="in", magnitude=2.34),
     arg_params={'M': M}

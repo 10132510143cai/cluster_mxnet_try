@@ -13,8 +13,8 @@ def model_main(k, a):
 
     xipart_net = mx.sym.Variable(name='dataxi')
     xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc1_weight, bias=fc1_bias, num_hidden=64, name="fc1")
-    xipart_net = mx.sym.Dropout(data=xipart_net, p=0.2)
     xipart_net = mx.sym.Activation(xipart_net, name='relu1', act_type="relu")
+    xipart_net = mx.sym.Dropout(data=xipart_net, p=0.2)
     xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension batch_size*k
 
     xjpart_net = mx.sym.Variable(name='dataxj')
@@ -47,6 +47,23 @@ def model_main(k, a):
     ls = mx.sym.MakeLoss(loss_function)
     print "模型构建完成"
     return ls
+
+def modelfx(k):
+    fc1_weight = mx.sym.Variable('fc1_weight')
+    fc1_bias = mx.sym.Variable('fc1_bias')
+
+    fc2_weight = mx.sym.Variable('fc2_weight')
+    fc2_bias = mx.sym.Variable('fc2_bias')
+
+    xipart_net = mx.sym.Variable(name='data')
+    xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc1_weight, bias=fc1_bias, num_hidden=64, name="fc1")
+    xipart_net = mx.sym.Activation(xipart_net, name='relu1', act_type="relu")
+    xipart_net = mx.sym.Dropout(data=xipart_net, p=0.2)
+    xipart_net = mx.sym.FullyConnected(data=xipart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k,
+                                       name="fc2")  # dimension batch_size*k
+
+    return xipart_net
+
 
 # # 测试main
 # k = 1

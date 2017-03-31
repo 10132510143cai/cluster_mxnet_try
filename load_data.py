@@ -40,12 +40,11 @@ class Batch(object):
 
 
 class MyDataIter(mx.io.DataIter):
-    def __init__(self, z, label, batch_size, k, self_made_m):
+    def __init__(self, z, label, batch_size, self_made_m):
         super(MyDataIter, self).__init__()
         self.data = z
         self.label = label
         self.batch_size = batch_size
-        self.k = k
         self.self_made_m = self_made_m
         # self.provide_data = [('dataxi', (1,)), ('dataxj', (1,)), ('isinM', (1, 1)), ('M', (k, k))]
         self.provide_data = [('dataxi', (batch_size,  784)), ('dataxj', (batch_size,  784)), ('isinM', (batch_size, ))]
@@ -131,6 +130,6 @@ def load_data_main():
 
     return x, val_x, train_iter, val_iter, train_label, val_label
 
-def get_data(train_z, val_z, train_label, val_label, batch_size, k, self_made_m):
-    return MyDataIter(train_z, train_label, batch_size, k, self_made_m), MyDataIter(val_z, val_label, batch_size, k, self_made_m)
+def get_data(train_z, val_z, train_label, val_label, batch_size, self_made_m):
+    return MyDataIter(train_z, train_label, batch_size, self_made_m), MyDataIter(val_z, val_label, batch_size, self_made_m)
 
