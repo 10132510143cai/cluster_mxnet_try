@@ -15,16 +15,7 @@ def mx_predict(data, model):
     Batch = namedtuple('Batch', ['data'])
     preds = []
 
-    # 获得原来的网络设计
     k = 10
-    # a = 0.7
-    # network = mlp_model.model_main(k, a)
-    # all_layers = network.get_internals()  # get internal output
-    # print all_layers.list_outputs()
-    # outputlist = all_layers.list_outputs()
-    # fc2outputindex = outputlist.index('fc2_output')
-    # my_sym = all_layers[fc2outputindex]
-
     # 重新设计相同的网络
     network = mlp_model.modelfx(k)
 
@@ -86,6 +77,7 @@ preds = mx_predict(x, model_loaded)
 M = np.random.randint(0, 1, size=(10, 10))
 a = 0.7
 y = 0.5
+Lambda = 1
 
 for i in range(0, x.shape[0]):
     for j in range(0, x.shape[0]):
@@ -109,9 +101,15 @@ count = M - y * count
 U, Sigma, VT = randomized_svd(count, n_components=10,
                               n_iter=5,
                               random_state=None)
-print "U", U.shape
-print "Sigma", Sigma.shape
-print "V", VT.shape
+
+SigmaArray = np.zeros(shape=(10, 10))
+for i in range(0, SigmaArray.shape[0]):
+    for j in range(0, SigmaArray.shape[1]):
+        SigmaArray[i][j] = min(max(-Lambda*y, Sigma[i]), Lambda*y)
+
+new_M = np.dot(U, SigmaArray)
+new_M = np.dot(M, VT)
+
 # lossresult = model_loaded.predict(train)
 # print lossresult.shape
 # for i in range(0, self_made_m.shape[0]):
