@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import mxnet as mx
+import numpy as np
+import Network_model as mlp_model
+from sklearn.utils.extmath import randomized_svd
 import load_data
 import random
-import numpy as np
-from sklearn.decomposition import TruncatedSVD
-from sklearn.utils.extmath import randomized_svd
-
 def sub_dict(dic, keys):
     return {k: dic[k] for k in keys}
 
@@ -42,89 +41,66 @@ def mx_predict(data, model):
     return np.asarray(preds)
 
 
-import Network_model as mlp_model
-prefix = 'mymodel'
-iteration = 100
+def m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k):
+    # 加载f(x) model
+    model_loaded = mx.model.FeedForward.load(prefix, iteration)
+    print "模型加载完毕"
 
+    # 获得新的train_label的preds
+    count = 0
+    preds = mx_predict(x, model_loaded)
 
-# 加载f(x) model
-model_loaded = mx.model.FeedForward.load(prefix, iteration)
-print "模型加载完毕"
-# 加载训练集以及数据集X
-x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_main()
+    for i in range(0, x.shape[0]):
+        for j in range(0, x.shape[0]):
+            templeft = np.dot(preds[i].reshape((1, preds.shape[1])), M)
+            templeft = np.dot(templeft, preds[j].T.reshape(preds.shape[1], 1))
 
-# 进行数据的shuffle
-train_label = train_label.reshape(train_label.shape[0], 1)
-numpyx = x.asnumpy()
-training_data = np.concatenate((numpyx, train_label), axis=1)
-random.shuffle(training_data)
+            tempright = np.dot(preds[i].T.reshape(preds.shape[1], 1), preds[j].reshape((1, preds.shape[1])))
 
-x = training_data[:, :-1]
-train_label = training_data[:, -1]
-x = x[:600]
-val_x = val_x[:600]
-train_label = train_label[:600]
-val_label = val_label[:600]
-print train_label[0:10]
-print "数据加载完毕"
-
-batch_size = 6
-
-# 获得新的train_label的preds
-count = 0
-preds = mx_predict(x, model_loaded)
-
-M = np.random.randint(0, 1, size=(10, 10))
-a = 0.7
-y = 0.5
-Lambda = 1
-
-for i in range(0, x.shape[0]):
-    for j in range(0, x.shape[0]):
-        templeft = np.dot(preds[i].reshape((1, preds.shape[1])), M)
-        templeft = np.dot(templeft, preds[j].T.reshape(preds.shape[1], 1))
-
-        tempright = np.dot(preds[i].T.reshape(preds.shape[1], 1), preds[j].reshape((1, preds.shape[1])))
-
-        if i == 0 and j == 0:
-            if train_label[i] == train_label[j]:
-                count = a * (templeft - 1) * tempright
+            if i == 0 and j == 0:
+                if train_label[i] == train_label[j]:
+                    count = a * (templeft - 1) * tempright
+                else:
+                    count = (1 - a) * templeft * tempright
             else:
-                count = (1 - a) * templeft * tempright
-        else:
-            if train_label[i] == train_label[j]:
-                count = count + a * (templeft - 1) * tempright
-            else:
-                count = count + (1 - a) * templeft * tempright
+                if train_label[i] == train_label[j]:
+                    count = count + a * (templeft - 1) * tempright
+                else:
+                    count = count + (1 - a) * templeft * tempright
 
-count = M - y * count
-U, Sigma, VT = randomized_svd(count, n_components=10,
-                              n_iter=5,
-                              random_state=None)
+    count = M - Gama * count
+    U, Sigma, VT = randomized_svd(count, n_components=k,
+                                  n_iter=5,
+                                  random_state=None)
 
-SigmaArray = np.zeros(shape=(10, 10))
-for i in range(0, SigmaArray.shape[0]):
-    for j in range(0, SigmaArray.shape[1]):
-        SigmaArray[i][j] = min(max(-Lambda*y, Sigma[i]), Lambda*y)
+    SigmaArray = np.zeros(shape=(10, 10))
+    for i in range(0, SigmaArray.shape[0]):
+        SigmaArray[i][i] = min(max(-Lambda * Gama, Sigma[i]), Lambda * Gama)
 
-new_M = np.dot(U, SigmaArray)
-new_M = np.dot(M, VT)
+    print SigmaArray
+    new_M = np.dot(U, SigmaArray)
+    new_M = np.dot(new_M, VT)
+    print "new_M", new_M
+    return new_M
 
-# lossresult = model_loaded.predict(train)
-# print lossresult.shape
-# for i in range(0, self_made_m.shape[0]):
-#     for j in range(0, self_made_m.shape[1]):
-#         train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, self_made_m)
-#         lossresult = model_loaded.predict(train)
+# 测试用main
+# x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_main()
 #
-#         if self_made_m[i][j] == 1:
-#             train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, self_made_m)
-#             lossresult = model_loaded.predict(train)
-#             print lossresult
-#         else:
-#             data_all = [mx.nd.array(training_data[i]), mx.nd.array(training_data[j]), mx.nd.array([0])]
-#             data_batch = load_data.Batch(data_names, data_all, label_names, label_all)
-#             lossresult = model_loaded.predict(data_batch)
-#             print lossresult
+# # 进行数据的shuffle
+# train_label = train_label.reshape(train_label.shape[0], 1)
+# numpyx = x.asnumpy()
+# training_data = np.concatenate((numpyx, train_label), axis=1)
+# random.shuffle(training_data)
+#
+# x = training_data[:, :-1]
+# train_label = training_data[:, -1]
+# x = x[:600]
+# val_x = val_x[:600]
+# train_label = train_label[:600]
+# val_label = val_label[:600]
+# print train_label[0:10]
+# print "数据加载完毕"
+# M = np.random.randint(0, 1, size=(10, 10))
+# m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k)
 
 
