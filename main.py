@@ -18,7 +18,7 @@ prefix = 'mymodel'
 iteration = 0
 batch_size = 6
 num_epoch = 10
-learning_rate = 0.03
+learning_rate = 0.02
 
 Gama = 0.7
 Lambda = 0.8
@@ -30,6 +30,7 @@ x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_mai
 train_label = train_label.reshape(train_label.shape[0], 1)
 numpyx = x.asnumpy()
 training_data = np.concatenate((numpyx, train_label), axis=1)
+random.shuffle(training_data)
 
 # 进行logger的初始化
 logger = logging.getLogger()
@@ -37,7 +38,7 @@ logger.setLevel(logging.DEBUG)
 # 做十次循环
 for i in range(0, 10):
     # 重新构建数据集
-    random.shuffle(training_data)
+
 
     x = training_data[:, :-1]
     train_label = training_data[:, -1]
