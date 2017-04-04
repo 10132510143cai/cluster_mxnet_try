@@ -81,7 +81,7 @@ def m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k):
     new_M = np.dot(U, SigmaArray)
     new_M = np.dot(new_M, VT)
     print "new_M", new_M
-    return new_M
+    return new_M, preds
 
 # 测试用main
 # x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_main()

@@ -29,7 +29,7 @@
     }, 
     {
       "op": "Dropout", 
-      "name": "dropout27", 
+      "name": "dropout18", 
       "attr": {"p": "0.2"}, 
       "inputs": [[4, 0, 0]]
     }, 
@@ -57,7 +57,7 @@
     }, 
     {
       "op": "dot", 
-      "name": "dot9", 
+      "name": "dot6", 
       "inputs": [[8, 0, 0], [9, 0, 0]]
     }, 
     {
@@ -79,7 +79,7 @@
     }, 
     {
       "op": "Dropout", 
-      "name": "dropout28", 
+      "name": "dropout19", 
       "attr": {"p": "0.2"}, 
       "inputs": [[13, 0, 0]]
     }, 
@@ -91,12 +91,12 @@
     }, 
     {
       "op": "_mul", 
-      "name": "_mul45", 
+      "name": "_mul30", 
       "inputs": [[10, 0, 0], [15, 0, 0]]
     }, 
     {
       "op": "sum", 
-      "name": "sum9", 
+      "name": "sum6", 
       "attr": {"axis": "1"}, 
       "inputs": [[16, 0, 0]]
     }, 
@@ -107,65 +107,65 @@
     }, 
     {
       "op": "_mul", 
-      "name": "_mul46", 
+      "name": "_mul31", 
       "inputs": [[17, 0, 0], [18, 0, 0]]
     }, 
     {
       "op": "_sub", 
-      "name": "_minus9", 
+      "name": "_minus6", 
       "inputs": [[19, 0, 0], [18, 0, 0]]
     }, 
     {
       "op": "_mul_scalar", 
-      "name": "_mulscalar18", 
+      "name": "_mulscalar12", 
       "attr": {"scalar": "0.7"}, 
       "inputs": [[20, 0, 0]]
     }, 
     {
       "op": "_mul", 
-      "name": "_mul47", 
+      "name": "_mul32", 
       "inputs": [[21, 0, 0], [21, 0, 0]]
     }, 
     {
       "op": "sum", 
-      "name": "sum_axis18", 
+      "name": "sum_axis12", 
       "inputs": [[22, 0, 0]]
     }, 
     {
       "op": "_mul_scalar", 
-      "name": "_mulscalar19", 
+      "name": "_mulscalar13", 
       "attr": {"scalar": "0.3"}, 
       "inputs": [[17, 0, 0]]
     }, 
     {
       "op": "_rminus_scalar", 
-      "name": "_rminusscalar9", 
+      "name": "_rminusscalar6", 
       "attr": {"scalar": "1"}, 
       "inputs": [[18, 0, 0]]
     }, 
     {
       "op": "_mul", 
-      "name": "_mul48", 
+      "name": "_mul33", 
       "inputs": [[24, 0, 0], [25, 0, 0]]
     }, 
     {
       "op": "_mul", 
-      "name": "_mul49", 
+      "name": "_mul34", 
       "inputs": [[26, 0, 0], [26, 0, 0]]
     }, 
     {
       "op": "sum", 
-      "name": "sum_axis19", 
+      "name": "sum_axis13", 
       "inputs": [[27, 0, 0]]
     }, 
     {
       "op": "elemwise_add", 
-      "name": "_plus9", 
+      "name": "_plus6", 
       "inputs": [[23, 0, 0], [28, 0, 0]]
     }, 
     {
       "op": "MakeLoss", 
-      "name": "makeloss9", 
+      "name": "makeloss6", 
       "inputs": [[29, 0, 0]]
     }
   ], 
@@ -205,5 +205,5 @@
     33
   ], 
   "heads": [[30, 0, 0]], 
-  "attrs": {"mxnet_version": ["int", 901]}
+  "attrs": {"mxnet_version": ["int", 904]}
 }
