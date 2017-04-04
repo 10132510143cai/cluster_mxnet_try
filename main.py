@@ -27,6 +27,9 @@ train_label = train_label.reshape(train_label.shape[0], 1)
 numpyx = x.asnumpy()
 training_data = np.concatenate((numpyx, train_label), axis=1)
 
+# 进行logger的初始化
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 # 做十次循环
 for i in range(0, 10):
     # 重新构建数据集
@@ -44,7 +47,8 @@ for i in range(0, 10):
     print "训练集和验证集数据收集完毕，开始生成训练集以及验证集"
     # 更新模型迭代次数
     iteration = iteration + 100
-
+    hdlr = logging.FileHandler('log-' + iteration + '.txt')
+    logger.addHandler(hdlr)
     minimizefx.fx_minimize(x, val_x, train_label, val_label, M, k, a, batch_size, prefix, iteration,
                            num_epoch, learning_rate)
     M = minimizem.m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k)
