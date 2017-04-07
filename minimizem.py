@@ -73,6 +73,8 @@ def m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k):
                                   n_iter=5,
                                   random_state=None)
 
+    print Sigma
+    np.savetxt('Sigma' + str(iteration) + '-' + str(600), Sigma, fmt=['%s']*Sigma.shape[1], newline='\n')
     SigmaArray = np.zeros(shape=(10, 10))
     for i in range(0, SigmaArray.shape[0]):
         SigmaArray[i][i] = min(max(-Lambda * Gama, Sigma[i]), Lambda * Gama)
