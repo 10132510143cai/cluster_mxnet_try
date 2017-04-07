@@ -30,7 +30,7 @@ def fx_minimize(x, val_x, train_label, val_label, M, k, a, batch_size, prefix, i
         X=train,  # training data
         eval_metric=metric,
         # eval_data=test,  # validation data
-        batch_end_callback=mx.callback.Speedometer(batch_size, 200)  # output progress for each 200 data batches
+        batch_end_callback=mx.callback.Speedometer(batch_size, 600*600/batch_size)  # output progress for each 200 data batches
     )
 
     model.save(prefix, iteration)

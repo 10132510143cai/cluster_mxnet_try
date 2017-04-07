@@ -21,7 +21,7 @@ class Auc(mx.metric.EvalMetric):
         self.sum_metric += np.sum(pred)
         # print "loss: ",
         # print self.sum_metric
-        self.num_inst += len(pred)
+        self.num_inst = 1
 
 class Batch(object):
     def __init__(self, data_names, data, label_names, label):
@@ -110,8 +110,8 @@ def to4d(img):
 
 # 加载数据集
 def load_data_main():
-    path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
-    # path = 'C:\Users\Mr_C\Desktop\MNIST/'
+    # path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
+    path = 'C:\Users\Mr_C\Desktop\MNIST/'
     (train_lbl, train_img) = read_data(
         path + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
     (val_lbl, val_img) = read_data(

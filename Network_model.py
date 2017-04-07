@@ -33,12 +33,12 @@ def model_main(k, a):
 
     isinm = mx.sym.Variable('isinM')  #dimenstion batchsize * 1
 
-    isinmpart = a * (net * isinm - isinm)
-    isinmpart = isinmpart * isinmpart  # 相当于单个值得二范数
+    isinmpart = net * isinm - isinm
+    isinmpart = a * isinmpart * isinmpart  # 相当于单个值得二范数
     isinmpart = mx.symbol.sum_axis(isinmpart)  # dimension 1*1
 
-    isnotinmpart = net * (1 - a) * (1 - isinm)
-    isnotinmpart = isnotinmpart * isnotinmpart  # 相当于单个值得二范数
+    isnotinmpart = net * (1 - isinm)
+    isnotinmpart = (1 - a) * isnotinmpart * isnotinmpart  # 相当于单个值得二范数
     isnotinmpart = mx.symbol.sum_axis(isnotinmpart)  # dimension 1*1
 
     loss_function = isinmpart + isnotinmpart
