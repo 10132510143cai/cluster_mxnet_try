@@ -17,7 +17,7 @@ a = 0.7
 prefix = 'mymodel'
 iteration = 0
 batch_size = 64
-num_epoch = 1000
+num_epoch = 400
 learning_rate = 0.02
 
 Gama = 0.7
