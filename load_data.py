@@ -110,8 +110,8 @@ def to4d(img):
 
 # 加载数据集
 def load_data_main():
-    # path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
-    path = 'C:\Users\Mr_C\Desktop\MNIST/'
+    path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
+    # path = 'C:\Users\Mr_C\Desktop\MNIST/'
     (train_lbl, train_img) = read_data(
         path + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
     (val_lbl, val_img) = read_data(

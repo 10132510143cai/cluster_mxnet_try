@@ -20,8 +20,8 @@ batch_size = 64
 num_epoch = 300
 learning_rate = 0.02
 
-Gama = 0.7
-Lambda = 0.8
+Gama = 1
+Lambda = 1
 
 # 加载训练集以及数据集X
 x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_main()
@@ -31,31 +31,30 @@ train_label = train_label.reshape(train_label.shape[0], 1)
 numpyx = x.asnumpy()
 training_data = np.concatenate((numpyx, train_label), axis=1)
 random.shuffle(training_data)
+x = training_data[:, :-1]
+train_label = training_data[:, -1]
+# 数据整合shuffle完毕
 
+train_data_count = 600
+# 数据截取
+x = x[:train_data_count]
+val_x = val_x[:train_data_count]
+train_label = train_label[:train_data_count]
+val_label = val_label[:train_data_count]
+print "训练集和验证集数据收集完毕，开始生成训练集以及验证集"
+
+self_made_m = initM.init_m_random(train_label)
 # 进行logger的初始化
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 # 做十次循环
-for i in range(0, 10):
-    # 重新构建数据集
+for i in range(0, 20):
 
-
-    x = training_data[:, :-1]
-    train_label = training_data[:, -1]
-    # 数据整合shuffle完毕
-
-    train_data_count = 600
-    # 数据截取
-    x = x[:train_data_count]
-    val_x = val_x[:train_data_count]
-    train_label = train_label[:train_data_count]
-    val_label = val_label[:train_data_count]
-    print "训练集和验证集数据收集完毕，开始生成训练集以及验证集"
     # 更新模型迭代次数
     iteration = iteration + 100
     hdlr = logging.FileHandler('log-' + str(iteration) + '.txt')
     logger.addHandler(hdlr)
-    self_made_m = minimizefx.fx_minimize(x, val_x, train_label, val_label, M, k, a, batch_size, prefix, iteration,
+    minimizefx.fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_size, prefix, iteration,
                            num_epoch, learning_rate)
     old_M = M
     M, preds = minimizem.m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k)

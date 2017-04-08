@@ -6,9 +6,8 @@ import load_data
 import initM
 import logging
 
-def fx_minimize(x, val_x, train_label, val_label, M, k, a, batch_size, prefix, iteration, num_epoch, learning_rate):
+def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_size, prefix, iteration, num_epoch, learning_rate):
     logging.getLogger().setLevel(logging.DEBUG)
-    self_made_m = initM.init_m_random(train_label)
     train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, self_made_m)
     print "训练集+验证集生成完成"
 
@@ -34,4 +33,4 @@ def fx_minimize(x, val_x, train_label, val_label, M, k, a, batch_size, prefix, i
     )
 
     model.save(prefix, iteration)
-    return self_made_m
+

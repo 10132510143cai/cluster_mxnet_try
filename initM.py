@@ -47,6 +47,8 @@ def init_m_random(train_label):
                 if random.random() <= 0.8:
                     arrayM[keylist[i]][keylist[j]] = 1
                     arrayM[keylist[j]][keylist[i]] = 1
+                elif keylist[i] == keylist[j]:
+                    arrayM[keylist[i]][keylist[j]] = 1
 
     print arrayM
     return arrayM
