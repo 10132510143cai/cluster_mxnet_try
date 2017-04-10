@@ -23,6 +23,10 @@ class Auc(mx.metric.EvalMetric):
         # print self.sum_metric
         self.num_inst = 1
 
+class SelfOptimizer(mx.optimizer.SGD):
+    def set_lr_mult(self, args_lr_mult):
+        args_lr_mult['M'] = 0
+
 class Batch(object):
     def __init__(self, data_names, data, label_names, label):
         self.data = data
@@ -110,8 +114,8 @@ def to4d(img):
 
 # 加载数据集
 def load_data_main():
-    path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
-    # path = 'C:\Users\Mr_C\Desktop\MNIST/'
+    # path = 'C:\Users\JimGrey\PycharmProjects\cluster_mxnet_try/mnist/'
+    path = 'mnist/'
     (train_lbl, train_img) = read_data(
         path + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
     (val_lbl, val_img) = read_data(

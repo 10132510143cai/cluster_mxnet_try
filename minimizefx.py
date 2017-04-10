@@ -15,11 +15,17 @@ def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_si
 
     if iteration != 0:
         # 训练模型
+        SelfOptimizer = load_data.SelfOptimizer(learning_rate=0.02, rescale_grad=(1.0 / batch_size))
+        sgd = mx.optimizer.create('sgd', learning_rate=0.02)
+        optimizer = mx.optimizer.create('sgd', learning_rate=0.02,
+                               rescale_grad=(1.0 / batch_size))
         model = mx.model.FeedForward(
             symbol=net,  # network structure
             num_epoch=num_epoch,  # number of data passes for training
             learning_rate=learning_rate,  # learning rate of SGD
             initializer=mx.init.Xavier(factor_type="in", magnitude=2.34),
+            optimizer=SelfOptimizer,
+            # optimizer=optimizer,
             arg_params={'M': M}
         )
         metric = load_data.Auc()
