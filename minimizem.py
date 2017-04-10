@@ -6,6 +6,8 @@ import Network_model as mlp_model
 from sklearn.utils.extmath import randomized_svd
 import load_data
 import random
+from numpy import linalg as la
+
 def sub_dict(dic, keys):
     return {k: dic[k] for k in keys}
 
@@ -69,9 +71,7 @@ def m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k):
                     count = count + (1 - a) * templeft * tempright
 
     count = M - Gama * count
-    U, Sigma, VT = randomized_svd(count, n_components=k,
-                                  n_iter=5,
-                                  random_state=None)
+    U, Sigma, VT = la.svd(count)
 
     print Sigma
     np.savetxt('Sigma' + str(iteration) + '-' + str(600), Sigma, newline='\n')
