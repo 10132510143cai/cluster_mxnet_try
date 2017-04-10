@@ -12,6 +12,12 @@ def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_si
     print "训练集+验证集生成完成"
     # 加载训练网络
     net = mlp_model.model_main(k, a)
+    internals = net.get_internals()
+    arg_names = internals.list_arguments()
+    lr_dict = dict()
+    for arg_name in arg_names:
+        if arg_name == 'M':
+            lr_dict[arg_name] = 0
 
     if iteration != 0:
         # 训练模型
@@ -19,12 +25,13 @@ def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_si
         sgd = mx.optimizer.create('sgd', learning_rate=0.02)
         optimizer = mx.optimizer.create('sgd', learning_rate=0.02,
                                rescale_grad=(1.0 / batch_size))
+        optimizer.set_lr_mult(lr_dict)
         model = mx.model.FeedForward(
             symbol=net,  # network structure
             num_epoch=num_epoch,  # number of data passes for training
             learning_rate=learning_rate,  # learning rate of SGD
             initializer=mx.init.Xavier(factor_type="in", magnitude=2.34),
-            optimizer=SelfOptimizer,
+            # optimizer=SelfOptimizer,
             # optimizer=optimizer,
             arg_params={'M': M}
         )

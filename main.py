@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import mxnet as mx
 from numpy import linalg as la
 
-M = np.random.randint(0, 1, size=(10, 10))
+M = np.random.randint(0, 2, size=(10, 10))
 k = 10
 a = 0.7
 prefix = 'mymodel'

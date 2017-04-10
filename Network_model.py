@@ -24,7 +24,7 @@ def model_main(k, a):
     xjpart_net = mx.sym.Dropout(data=xjpart_net, p=0.2)
     xjpart_net = mx.sym.FullyConnected(data=xjpart_net, weight=fc2_weight, bias=fc2_bias, num_hidden=k, name="fc2")  # dimension 1*k
 
-    m = mx.sym.Variable(name='M', shape=(10, 10))  # M k*k
+    m = mx.sym.Variable(name='M', shape=(10, 10), attr={'lr_mult': '0'})  # M k*k
 
     xipart_net = mx.symbol.dot(lhs=xipart_net, rhs=m)  # dimension batchsize * k
     #  xjpart_net = mx.sym.transpose(data=xjpart_net, name='fc4')  # xj dimension k * batchsize
