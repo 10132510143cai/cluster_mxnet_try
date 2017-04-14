@@ -43,7 +43,7 @@ def mx_predict(data, model):
     return np.asarray(preds)
 
 
-def m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k):
+def m_minimize(x, self_made_m, M, prefix, iteration, a, Gama, Lambda, k):
     # 加载f(x) model
     model_loaded = mx.model.FeedForward.load(prefix, iteration)
     print "模型加载完毕"
@@ -60,30 +60,71 @@ def m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k):
             tempright = np.dot(preds[i].T.reshape(preds.shape[1], 1), preds[j].reshape((1, preds.shape[1])))
 
             if i == 0 and j == 0:
-                if train_label[i] == train_label[j]:
+                if self_made_m[i][j] == 1:
                     count = a * (templeft - 1) * tempright
                 else:
                     count = (1 - a) * templeft * tempright
             else:
-                if train_label[i] == train_label[j]:
-                    count = count + a * (templeft - 1) * tempright
+                if self_made_m[i][j] == 1:
+                    count = count + a * (templeft - 1)  * tempright
                 else:
                     count = count + (1 - a) * templeft * tempright
 
-    count = M - Gama * count
-    U, Sigma, VT = la.svd(count)
+    np.savetxt('calculateM/count- ' + str(k), count, newline='\n')
+    count2 = M - 2 * Gama * count
+    U, Sigma, VT = la.svd(count2)
 
     print Sigma
-    np.savetxt('Sigma' + str(iteration) + '-' + str(600), Sigma, newline='\n')
+    np.savetxt('calculateM/Sigma-' + str(k), Sigma, newline='\n')
     SigmaArray = np.zeros(shape=(10, 10))
     for i in range(0, SigmaArray.shape[0]):
-        SigmaArray[i][i] = min(max(-Lambda * Gama, Sigma[i]), Lambda * Gama)
+        SigmaArray[i][i] = Sigma[i] - min(max(-Lambda * Gama, Sigma[i]), Lambda * Gama)
 
     print SigmaArray
     new_M = np.dot(U, SigmaArray)
     new_M = np.dot(new_M, VT)
-    print "new_M", new_M
     return new_M, preds
+
+
+def m_minimize_bynetwork(x, val_x, train_label, val_label, batch_size, self_made_m, prefix, iteration, num_epoch, learning_rate, k, a):
+    # 第二次初始化时使用加载的模型
+    model_loaded = mx.model.FeedForward.load(prefix, iteration)
+    # 加载初始化参数
+    params = model_loaded.get_params()  # get model paramters
+    arg_params = params['arg_params']
+
+    # 初始化训练集
+    train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, self_made_m)
+    # 加载优化M的网络
+    net = mlp_model.modelM(k, a)
+
+    model = mx.model.FeedForward(
+        symbol=net,  # network structure
+        num_epoch=num_epoch+100,  # number of data passes for training
+        learning_rate=learning_rate,  # learning rate of SGD
+        initializer=mx.init.Xavier(factor_type="in", magnitude=2.34),
+        # optimizer=SelfOptimizer,
+        # optimizer=optimizer,
+        arg_params=arg_params
+    )
+
+    metric = load_data.Auc()
+    print "网络加载完成，开始训练"
+    model.fit(
+        X=train,  # training data
+        eval_metric=metric,
+        # eval_data=test,  # validation data
+        batch_end_callback=mx.callback.Speedometer(batch_size, 600 * 600 / batch_size, iteration=iteration,
+                                                   minwhich='m-')
+        # output progress for each 200 data batches
+    )
+
+    model.save(prefix+'-M', iteration)
+    model_loaded = mx.model.FeedForward.load(prefix+'-M', iteration)
+    params = model_loaded.get_params()  # get model paramters
+    arg_params = params['arg_params']
+    m = arg_params['M'].asnumpy()
+    return m
 
 # 测试用main
 # x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_main()

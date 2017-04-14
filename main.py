@@ -87,34 +87,36 @@ for i in range(0, 20):
     f.close()
     # 计算新f(x)旧M 结束
 
-    #循环迭代优化M
-    for i in range(0, 3):
-        New_M, preds = minimizem.m_minimize(x, train_label, M, prefix, iteration, a, Gama, Lambda, k)
-        M = New_M
+    # #循环迭代优化M
+    # for i in range(0, 3):
+    #     New_M, preds = minimizem.m_minimize(x, self_made_m, M, prefix, iteration, a, Gama, Lambda, k)
+    #     M = New_M
+    #
+    #     calculateM = np.zeros((train_label.shape[0], train_label.shape[0]))
+    #     for xi in range(0, x.shape[0]):
+    #         for xj in range(xi, x.shape[0]):
+    #             calculateM[xi][xj] = np.dot(np.dot(preds[xi], M), preds[xj].T)
+    #             calculateM[xj][xi] = calculateM[xi][xj]
+    #
+    #     # 计算总的loss
+    #     U, Sigma, VT = la.svd(M)
+    #     mainloss = sum(Sigma)
+    #
+    #     for xi in range(0, x.shape[0]):
+    #         for xj in range(0, x.shape[0]):
+    #             if self_made_m[xi][xj] == 1:
+    #                 mainloss = mainloss + a * (calculateM[xi][xj] - 1) * (calculateM[xi][xj] - 1)
+    #             else:
+    #                 mainloss = mainloss + (1 - a) * calculateM[xi][xj] * calculateM[xi][xj]
+    #
+    #     f = open('mloss' + str(iteration) + '.txt', 'a')
+    #     f.write(str(mainloss))
+    #     f.write('\n')
+    #     f.close()
+    # # 循环迭代优化M 结束
 
-        calculateM = np.zeros((train_label.shape[0], train_label.shape[0]))
-        for xi in range(0, x.shape[0]):
-            for xj in range(xi, x.shape[0]):
-                calculateM[xi][xj] = np.dot(np.dot(preds[xi], M), preds[xj].T)
-                calculateM[xj][xi] = calculateM[xi][xj]
-
-        # 计算总的loss
-        U, Sigma, VT = la.svd(M)
-        mainloss = sum(Sigma)
-
-        for xi in range(0, x.shape[0]):
-            for xj in range(0, x.shape[0]):
-                if self_made_m[xi][xj] == 1:
-                    mainloss = mainloss + a * (calculateM[xi][xj] - 1) * (calculateM[xi][xj] - 1)
-                else:
-                    mainloss = mainloss + (1 - a) * calculateM[xi][xj] * calculateM[xi][xj]
-
-        f = open('mloss' + str(iteration) + '.txt', 'a')
-        f.write(str(mainloss))
-        f.write('\n')
-        f.close()
-    # 循环迭代优化M 结束
-
+    M = minimizem.m_minimize_bynetwork(x, val_x, train_label, val_label, batch_size, self_made_m, prefix, iteration,
+                                       num_epoch, learning_rate, k, a)
 
     # 保存M的结果
     np.savetxt('new-M' + str(iteration) + '-' + str(train_data_count), M, fmt=['%s']*M.shape[1], newline='\n')
