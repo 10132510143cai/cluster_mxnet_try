@@ -29,7 +29,7 @@
     }, 
     {
       "op": "Dropout", 
-      "name": "dropout0", 
+      "name": "dropout16", 
       "attr": {"p": "0.2"}, 
       "inputs": [[4, 0, 0]]
     }, 
@@ -52,12 +52,15 @@
     {
       "op": "null", 
       "name": "M", 
-      "attr": {"__shape__": "(10, 10)"}, 
+      "attr": {
+        "__lr_mult__": "0", 
+        "__shape__": "(10, 10)"
+      }, 
       "inputs": []
     }, 
     {
       "op": "dot", 
-      "name": "dot0", 
+      "name": "dot4", 
       "inputs": [[8, 0, 0], [9, 0, 0]]
     }, 
     {
@@ -79,7 +82,7 @@
     }, 
     {
       "op": "Dropout", 
-      "name": "dropout1", 
+      "name": "dropout17", 
       "attr": {"p": "0.2"}, 
       "inputs": [[13, 0, 0]]
     }, 
@@ -91,12 +94,12 @@
     }, 
     {
       "op": "_mul", 
-      "name": "_mul0", 
+      "name": "_mul20", 
       "inputs": [[10, 0, 0], [15, 0, 0]]
     }, 
     {
       "op": "sum", 
-      "name": "sum0", 
+      "name": "sum4", 
       "attr": {"axis": "1"}, 
       "inputs": [[16, 0, 0]]
     }, 
@@ -107,65 +110,65 @@
     }, 
     {
       "op": "_mul", 
-      "name": "_mul1", 
+      "name": "_mul21", 
       "inputs": [[17, 0, 0], [18, 0, 0]]
     }, 
     {
       "op": "_sub", 
-      "name": "_minus0", 
+      "name": "_minus4", 
       "inputs": [[19, 0, 0], [18, 0, 0]]
     }, 
     {
       "op": "_mul_scalar", 
-      "name": "_mulscalar0", 
+      "name": "_mulscalar8", 
       "attr": {"scalar": "0.7"}, 
       "inputs": [[20, 0, 0]]
     }, 
     {
       "op": "_mul", 
-      "name": "_mul2", 
+      "name": "_mul22", 
       "inputs": [[21, 0, 0], [20, 0, 0]]
     }, 
     {
       "op": "sum", 
-      "name": "sum_axis0", 
+      "name": "sum_axis8", 
       "inputs": [[22, 0, 0]]
     }, 
     {
       "op": "_rminus_scalar", 
-      "name": "_rminusscalar0", 
+      "name": "_rminusscalar4", 
       "attr": {"scalar": "1"}, 
       "inputs": [[18, 0, 0]]
     }, 
     {
       "op": "_mul", 
-      "name": "_mul3", 
+      "name": "_mul23", 
       "inputs": [[17, 0, 0], [24, 0, 0]]
     }, 
     {
       "op": "_mul_scalar", 
-      "name": "_mulscalar1", 
+      "name": "_mulscalar9", 
       "attr": {"scalar": "0.3"}, 
       "inputs": [[25, 0, 0]]
     }, 
     {
       "op": "_mul", 
-      "name": "_mul4", 
+      "name": "_mul24", 
       "inputs": [[26, 0, 0], [25, 0, 0]]
     }, 
     {
       "op": "sum", 
-      "name": "sum_axis1", 
+      "name": "sum_axis9", 
       "inputs": [[27, 0, 0]]
     }, 
     {
       "op": "elemwise_add", 
-      "name": "_plus0", 
+      "name": "_plus4", 
       "inputs": [[23, 0, 0], [28, 0, 0]]
     }, 
     {
       "op": "MakeLoss", 
-      "name": "makeloss0", 
+      "name": "makeloss4", 
       "inputs": [[29, 0, 0]]
     }
   ], 
@@ -205,5 +208,5 @@
     33
   ], 
   "heads": [[30, 0, 0]], 
-  "attrs": {"mxnet_version": ["int", 901]}
+  "attrs": {"mxnet_version": ["int", 904]}
 }
