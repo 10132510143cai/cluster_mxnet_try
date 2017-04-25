@@ -23,6 +23,7 @@ learning_rate = 0.02
 
 Gama = 0.2
 Lambda = 1
+beta = 1
 
 # 加载训练集以及数据集X
 x, val_x, train_iter, val_iter, train_label, val_label = load_data.load_data_main()
@@ -115,9 +116,9 @@ for i in range(0, 20):
     #     f.close()
     # # 循环迭代优化M 结束
 
-    M = minimizem.m_minimize_bynetwork(x, val_x, train_label, val_label, batch_size, self_made_m, prefix, iteration,
-                                       num_epoch, learning_rate, k, a)
-
+    # M = minimizem.m_minimize_bynetwork(x, val_x, train_label, val_label, batch_size, self_made_m, prefix, iteration,
+    #                                    num_epoch, 0.1, k, a)
+    M = minimizem.m_minimize_admm(x, self_made_m, M, prefix, iteration, a, beta, Lambda, k)
     # 保存M的结果
     np.savetxt('new-M' + str(iteration) + '-' + str(train_data_count), M, fmt=['%s']*M.shape[1], newline='\n')
 
