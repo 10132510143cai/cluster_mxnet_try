@@ -137,7 +137,7 @@ def shrinkage(fore, back):
     new_M = np.dot(new_M, VT)
     return new_M
 
-def addLinearequal(preds, i, j, beta, self_made_m):
+def addLinearequal(preds, i, j, beta, self_made_m, rowdata):
     # 生成i,j位置的方程组集合
     data = np.zeros(shape=(1, preds.shape[1] * preds.shape[1]))
     # beta*N
@@ -147,13 +147,16 @@ def addLinearequal(preds, i, j, beta, self_made_m):
 
     for x in range(0, preds.shape[0]):
         for y in range(0, preds.shape[0]):
-            if self_made_m[x][y]==1:
-                fore = preds[x][i]*preds[y][j]
-                for zi in range (0,preds.shape[1]):
-                    for zj in range(0, preds.shape[1]):
-                        data[0][zi*preds.shape[1]+zj] = data[0][zi*preds.shape[1]+zj]+fore*preds[x][zi]*preds[y][zj]
+            fore = preds[x][i] * preds[y][j]
+            for zi in range(0, preds.shape[1]):
+                for zj in range(0, preds.shape[1]):
+                    data[0][zi * preds.shape[1] + zj] = data[0][zi * preds.shape[1] + zj] + fore * (preds[x][zi] * preds[y][zj] - 1)
+                    # 将-1操作转化为结果的改变
+                    if self_made_m[x][y] == 1:
+                        rowdata[i][j] = rowdata[i][j] + fore
 
-    return data
+
+    return data, rowdata
 
 def m_minimize_admm(x, self_made_m, M, prefix, iteration, a, beta, Lambda, k):
     # 加载f(x) model
@@ -200,24 +203,24 @@ def m_minimize_admm(x, self_made_m, M, prefix, iteration, a, beta, Lambda, k):
         f.write('\n')
         f.close()
 
-        # 优化N,生成k^2个结果集
+        # # 优化N,生成k^2个结果集
         rowdata = beta * M - u
-
-        rowdata = rowdata.reshape((rowdata.shape[0]*rowdata.shape[0], 1))
-        print 'rowdata_shape',rowdata.shape
-        # 结果集生成完毕
 
         # 生成各个位置关于x11-xkk的方程组
         linearequaldata = 0
         for i in range(0, preds.shape[1]):
             for j in range(0, preds.shape[1]):
                 # 生成该位置的方程组集合
-                temppredata = addLinearequal(preds, i, j, beta, self_made_m)
+                temppredata, rowdata = addLinearequal(preds, i, j, beta, self_made_m, rowdata)
                 print i,',',j,'位置生成'
                 if i == 0 and j == 0:
                     linearequaldata = temppredata
                 else:
                     linearequaldata = np.row_stack((linearequaldata, temppredata))
+
+        rowdata = rowdata.reshape((rowdata.shape[0] * rowdata.shape[0], 1))
+        print 'rowdata_shape', rowdata.shape
+        # 结果集生成完毕
 
         print '已生成k^2个方程组'
         print 'linearequaldata.shape',linearequaldata.shape
