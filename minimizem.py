@@ -137,7 +137,7 @@ def shrinkage(fore, back):
     new_M = np.dot(new_M, VT)
     return new_M
 
-def addLinearequal(preds, i, j, beta, self_made_m, rowdata):
+def addLinearequal(a, preds, i, j, beta, self_made_m, rowdata):
     # 生成i,j位置的方程组集合
     data = np.zeros(shape=(1, preds.shape[1] * preds.shape[1]))
     # beta*N
@@ -150,11 +150,15 @@ def addLinearequal(preds, i, j, beta, self_made_m, rowdata):
             fore = preds[x][i] * preds[y][j]
             for zi in range(0, preds.shape[1]):
                 for zj in range(0, preds.shape[1]):
-                    data[0][zi * preds.shape[1] + zj] = data[0][zi * preds.shape[1] + zj] + fore * (preds[x][zi] * preds[y][zj] - 1)
-                    # 将-1操作转化为结果的改变
                     if self_made_m[x][y] == 1:
-                        rowdata[i][j] = rowdata[i][j] + fore
-
+                        # 将-1操作转化为结果的改变
+                        rowdata[i][j] = rowdata[i][j] + fore * a
+                        # 修改系数
+                        data[0][zi * preds.shape[1] + zj] = data[0][zi * preds.shape[1] + zj] + a * fore * (
+                        preds[x][zi] * preds[y][zj] - 1)
+                    else:
+                        data[0][zi * preds.shape[1] + zj] = data[0][zi * preds.shape[1] + zj] + (1- a) * fore * (
+                            preds[x][zi] * preds[y][zj] - 1)
 
     return data, rowdata
 
@@ -174,7 +178,7 @@ def m_minimize_admm(x, self_made_m, M, prefix, iteration, a, beta, Lambda, k):
     flag = True
     lastM = N
     itercount = 0
-    for mi in range(0, 15):
+    for mi in range(0, 900):
         # 优化M
         M = shrinkage(N+u/beta, Lambda*beta)
         # 优化M结束
@@ -211,7 +215,7 @@ def m_minimize_admm(x, self_made_m, M, prefix, iteration, a, beta, Lambda, k):
         for i in range(0, preds.shape[1]):
             for j in range(0, preds.shape[1]):
                 # 生成该位置的方程组集合
-                temppredata, rowdata = addLinearequal(preds, i, j, beta, self_made_m, rowdata)
+                temppredata, rowdata = addLinearequal(a, preds, i, j, beta, self_made_m, rowdata)
                 print i,',',j,'位置生成'
                 if i == 0 and j == 0:
                     linearequaldata = temppredata
