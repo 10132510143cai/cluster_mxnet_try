@@ -57,7 +57,7 @@ for i in range(0, 20):
     hdlr = logging.FileHandler('log-' + str(iteration) + '.txt')
     logger.addHandler(hdlr)
     minimizefx.fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_size, prefix, iteration,
-                           num_epoch, learning_rate)
+                           num_epoch, learning_rate, train_data_count)
     # 计算新f(x)旧M
     old_M = M
     # 加载f(x) model

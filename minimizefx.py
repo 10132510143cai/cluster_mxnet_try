@@ -6,7 +6,7 @@ import load_data
 import initM
 import logging
 
-def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_size, prefix, iteration, num_epoch, learning_rate):
+def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_size, prefix, iteration, num_epoch, learning_rate, train_data_count):
     logging.getLogger().setLevel(logging.DEBUG)
     train, test = load_data.get_data(x, val_x, train_label, val_label, batch_size, self_made_m)
     print "训练集+验证集生成完成"
@@ -21,7 +21,7 @@ def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_si
 
     if iteration == 100:
         # 训练模型
-        SelfOptimizer = load_data.SelfOptimizer(learning_rate=0.02, rescale_grad=(1.0 / batch_size))
+        t7 = load_data.SelfOptimizer(learning_rate=0.02, rescale_grad=(1.0 / batch_size))
         sgd = mx.optimizer.create('sgd', learning_rate=0.02)
         optimizer = mx.optimizer.create('sgd', learning_rate=0.02,
                                rescale_grad=(1.0 / batch_size))
@@ -42,14 +42,15 @@ def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_si
             X=train,  # training data
             eval_metric=metric,
             # eval_data=test,  # validation data
-            batch_end_callback=mx.callback.Speedometer(batch_size, 600 * 600 / batch_size, iteration=iteration)
+            batch_end_callback=mx.callback.Speedometer(batch_size, train_data_count * train_data_count / batch_size,
+                                                       iteration=iteration)
             # output progress for each 200 data batches
         )
 
         model.save(prefix, iteration)
     else:
         # 使用之前一次的模型
-        model_loaded = mx.model.FeedForward.load(prefix+'-M', iteration -100)
+        model_loaded = mx.model.FeedForward.load(prefix, iteration -100)
         # 加载初始化参数
         params = model_loaded.get_params()  # get model paramters
         arg_params = params['arg_params']
@@ -70,7 +71,8 @@ def fx_minimize(x, val_x, train_label, val_label, self_made_m, M, k, a, batch_si
             X=train,  # training data
             eval_metric=metric,
             # eval_data=test,  # validation data
-            batch_end_callback=mx.callback.Speedometer(batch_size, 600 * 600 / batch_size, iteration=iteration,
+            batch_end_callback=mx.callback.Speedometer(batch_size, train_data_count * train_data_count / batch_size,
+                                                       iteration=iteration,
                                                        minwhich='fx-')
             # output progress for each 200 data batches
         )

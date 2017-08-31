@@ -148,17 +148,22 @@ def addLinearequal(a, preds, i, j, beta, self_made_m, rowdata):
     for x in range(0, preds.shape[0]):
         for y in range(0, preds.shape[0]):
             fore = preds[x][i] * preds[y][j]
-            for zi in range(0, preds.shape[1]):
-                for zj in range(0, preds.shape[1]):
-                    if self_made_m[x][y] == 1:
-                        # 将-1操作转化为结果的改变
-                        rowdata[i][j] = rowdata[i][j] + fore * a
-                        # 修改系数
-                        data[0][zi * preds.shape[1] + zj] = data[0][zi * preds.shape[1] + zj] + a * fore * (
-                        preds[x][zi] * preds[y][zj] - 1)
-                    else:
-                        data[0][zi * preds.shape[1] + zj] = data[0][zi * preds.shape[1] + zj] + (1- a) * fore * (
-                            preds[x][zi] * preds[y][zj] - 1)
+            if self_made_m[x][y] == 1:
+                # 将-1操作转化为结果的改变
+                rowdata[i][j] = rowdata[i][j] + fore * a
+                reala = a
+            else:
+                reala = 1 - a
+
+
+            # for zi in range(0, preds.shape[1]):
+            #     for zj in range(0, preds.shape[1]):
+            #         # 修改系数
+            #         data[0][zi * preds.shape[1] + zj] = data[0][zi * preds.shape[1] + zj] + reala * fore * (
+            #             preds[x][zi] * preds[y][zj])
+
+            metricpreds = np.dot(preds[x].reshape(preds.shape[1], 1), preds[y].reshape(1, preds.shape[1]))
+            data[0] = data[0] + reala * fore * metricpreds.reshape(1,metricpreds.shape[0] * metricpreds.shape[1])
 
     return data, rowdata
 
@@ -174,14 +179,42 @@ def m_minimize_admm(x, self_made_m, M, prefix, iteration, a, beta, Lambda, k):
     N = M
     mainlosslist = []
     u = np.random.randint(0, 1, size=(10, 10))
-    M = 0
+    # M = 0
     flag = True
     lastM = N
     itercount = 0
-    for mi in range(0, 900):
+    for mi in range(0, 10):
+        # # 检查m步骤进行前关于M的loss
+        # f = open('minimize_m_admm.txt', 'a')
+        # f.write(str(mi))
+        # f.write('\n')
+        # U, Sigma, VT = la.svd(M)
+        # admm_m_loss = Lambda * sum(abs(Sigma))
+        # admm_m_loss = admm_m_loss - (u.T*(M-N)).trace()
+        # U, Sigma, VT = la.svd(M-N)
+        # maxeigenvalue = max(Sigma)
+        # admm_m_loss = admm_m_loss + beta / 2 * maxeigenvalue
+        # f.write(str(admm_m_loss))
+        # f.write('\n')
+        # f.close()
+        # # 检查m步骤进行前关于M的loss 结束
+
         # 优化M
         M = shrinkage(N+u/beta, Lambda*beta)
         # 优化M结束
+
+        # # 检查m步骤进行前关于M的loss
+        # f = open('minimize_m_admm.txt', 'a')
+        # U, Sigma, VT = la.svd(M)
+        # admm_m_loss = Lambda * sum(abs(Sigma))
+        # admm_m_loss = admm_m_loss - (u.T * (M - N)).trace()
+        # U, Sigma, VT = la.svd(M - N)
+        # maxeigenvalue = max(Sigma)
+        # admm_m_loss = admm_m_loss + beta / 2 * maxeigenvalue
+        # f.write(str(admm_m_loss))
+        # f.write('\n')
+        # f.close()
+        # # 检查m步骤进行前关于M的loss 结束
 
         # 测试loss
         # 计算总的loss
@@ -207,33 +240,85 @@ def m_minimize_admm(x, self_made_m, M, prefix, iteration, a, beta, Lambda, k):
         f.write('\n')
         f.close()
 
+        # # 检查n步骤进行前关于N的loss
+        # f = open('minimize_n_admm.txt', 'a')
+        # f.write(str(mi))
+        # f.write('\n')
+        #
+        # admm_n_loss = 0
+        # calculateN = np.zeros((preds.shape[0], preds.shape[0]))
+        # for ti in range(0, x.shape[0]):
+        #     for tj in range(ti, x.shape[0]):
+        #         calculateN[ti][tj] = np.dot(np.dot(preds[ti], N), preds[tj].T)
+        #         calculateN[tj][ti] = calculateN[ti][tj]
+        #
+        # for xi in range(0, x.shape[0]):
+        #     for xj in range(0, x.shape[0]):
+        #         if self_made_m[xi][xj] == 1:
+        #             admm_n_loss = admm_n_loss + a * (calculateN[xi][xj] - 1) * (calculateN[xi][xj] - 1)
+        #         else:
+        #             admm_n_loss = admm_n_loss + (1 - a) * calculateN[xi][xj] * calculateN[xi][xj]
+        #
+        # admm_n_loss = admm_n_loss - (u.T * (M - N)).trace()
+        # U, Sigma, VT = la.svd(M - N)
+        # maxeigenvalue = max(Sigma)
+        # admm_n_loss = admm_n_loss + beta / 2 * maxeigenvalue
+        # f.write(str(admm_n_loss))
+        # f.write('\n')
+        # f.close()
+        # # 检查n步骤进行前关于N的loss 结束
+
         # # 优化N,生成k^2个结果集
         rowdata = beta * M - u
 
         # 生成各个位置关于x11-xkk的方程组
+        print '开始生成方程组'
         linearequaldata = 0
         for i in range(0, preds.shape[1]):
             for j in range(0, preds.shape[1]):
                 # 生成该位置的方程组集合
                 temppredata, rowdata = addLinearequal(a, preds, i, j, beta, self_made_m, rowdata)
-                print i,',',j,'位置生成'
                 if i == 0 and j == 0:
                     linearequaldata = temppredata
                 else:
                     linearequaldata = np.row_stack((linearequaldata, temppredata))
 
         rowdata = rowdata.reshape((rowdata.shape[0] * rowdata.shape[0], 1))
-        print 'rowdata_shape', rowdata.shape
         # 结果集生成完毕
 
         print '已生成k^2个方程组'
-        print 'linearequaldata.shape',linearequaldata.shape
         # 已生成k^2*k^2维方程组
         resultN = solve(linearequaldata, rowdata)
         print(resultN)
         print resultN.shape
         N = resultN.reshape((preds.shape[1], preds.shape[1]))
         # 优化N完毕
+
+        # # 检查n步骤进行前关于N的loss
+        # f = open('minimize_n_admm.txt', 'a')
+        # admm_n_loss = 0
+        # calculateN = np.zeros((preds.shape[0], preds.shape[0]))
+        # for ti in range(0, x.shape[0]):
+        #     for tj in range(ti, x.shape[0]):
+        #         calculateN[ti][tj] = np.dot(np.dot(preds[ti], N), preds[tj].T)
+        #         calculateN[tj][ti] = calculateN[ti][tj]
+        #
+        # for xi in range(0, x.shape[0]):
+        #     for xj in range(0, x.shape[0]):
+        #         if self_made_m[xi][xj] == 1:
+        #             admm_n_loss = admm_n_loss + a * (calculateN[xi][xj] - 1) * (calculateN[xi][xj] - 1)
+        #         else:
+        #             admm_n_loss = admm_n_loss + (1 - a) * calculateN[xi][xj] * calculateN[xi][xj]
+        #
+        # admm_n_loss = admm_n_loss - (u.T * (M - N)).trace()
+        # U, Sigma, VT = la.svd(M - N)
+        # maxeigenvalue = max(Sigma)
+        # admm_n_loss = admm_n_loss + beta / 2 * maxeigenvalue
+        # f.write(str(admm_n_loss))
+        # f.write('\n')
+        # f.close()
+        # # 检查n步骤进行前关于N的loss 结束
+
         u = u - beta * ( M - N )
         # 优化u完毕
 

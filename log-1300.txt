@@ -1,0 +1,49 @@
+Start training with [cpu(0)]
+Epoch[0] Batch [5625]	Train-loss=7424.992717
+Epoch[0] Resetting Data Iterator
+Epoch[0] Time cost=14.011
+Epoch[1] Batch [5625]	Train-loss=7394.343367
+Epoch[1] Resetting Data Iterator
+Epoch[1] Time cost=13.622
+Epoch[2] Batch [5625]	Train-loss=7424.559063
+Epoch[2] Resetting Data Iterator
+Epoch[2] Time cost=10.227
+Epoch[3] Batch [5625]	Train-loss=7404.335206
+Epoch[3] Resetting Data Iterator
+Epoch[3] Time cost=10.152
+Epoch[4] Batch [5625]	Train-loss=7405.120886
+Epoch[4] Resetting Data Iterator
+Epoch[4] Time cost=17.033
+Epoch[5] Batch [5625]	Train-loss=7400.390569
+Epoch[5] Resetting Data Iterator
+Epoch[5] Time cost=20.056
+Epoch[6] Batch [5625]	Train-loss=7400.783363
+Epoch[6] Resetting Data Iterator
+Epoch[6] Time cost=11.531
+Epoch[7] Batch [5625]	Train-loss=7389.150936
+Epoch[7] Resetting Data Iterator
+Epoch[7] Time cost=13.226
+Epoch[8] Batch [5625]	Train-loss=7419.118697
+Epoch[8] Resetting Data Iterator
+Epoch[8] Time cost=16.854
+Epoch[9] Batch [5625]	Train-loss=7369.618715
+Epoch[9] Resetting Data Iterator
+Epoch[9] Time cost=12.258
+Epoch[10] Batch [5625]	Train-loss=7392.854490
+Epoch[10] Resetting Data Iterator
+Epoch[10] Time cost=10.443
+Epoch[11] Batch [5625]	Train-loss=7405.001107
+Epoch[11] Resetting Data Iterator
+Epoch[11] Time cost=31.152
+Epoch[12] Batch [5625]	Train-loss=7396.651233
+Epoch[12] Resetting Data Iterator
+Epoch[12] Time cost=13.060
+Epoch[13] Batch [5625]	Train-loss=7409.471607
+Epoch[13] Resetting Data Iterator
+Epoch[13] Time cost=12.503
+Epoch[14] Batch [5625]	Train-loss=7401.744659
+Epoch[14] Resetting Data Iterator
+Epoch[14] Time cost=9.982
+Epoch[15] Batch [5625]	Train-loss=7414.158384
+Epoch[15] Resetting Data Iterator
+Epoch[15] Time cost=11.383
